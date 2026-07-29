@@ -1,69 +1,126 @@
-{% extends "base.html"%}
+{% extends "base.html" %}
 
-{% block title %}
-News web App
-{% endblock %}
+{% block title %}Hot News - Latest Breaking News{% endblock %}
+{% block meta_description %}Hot News delivers the latest Kenya, technology, business and world news updates, refreshed around the clock.{% endblock %}
+{% block og_title %}Hot News - Latest Breaking News{% endblock %}
+{% block og_description %}Hot News delivers the latest Kenya, technology, business and world news updates.{% endblock %}
 
 {% block body %}
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#"><i class="fa-solid fa-fire"></i>Hot News</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="\?query=latest"><i class="fa-solid fa-house"></i>Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="\?query=Kenya"><i class="fa-solid fa-earth-africa"></i>Kenya</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="\?query=World"><i class="fa-solid fa-earth-europe"></i>World</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="\?query=health"><i class="fa-solid fa-viruses"></i>Health</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="\?query=technology"><i class="fa-solid fa-microchip"></i>Technology</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="\?query=finance"><i class="fa-solid fa-coins"></i>Finance</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="\?query=sports"><i class="fa-solid fa-volleyball"></i>Sports</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="\?query=Entertainment"><i class="fa-solid fa-video"></i>Entertainment</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="\?query=Education"><i class="fa-solid fa-user-graduate"></i>Education</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
 <div class="container">
-    <h2 class="news">Welcome to Hot news platform</h2>
-    <form class="d-flex" role="search">
-        <input class="form-control" type="text" name="query" value="{{query}}" placeholder="Search for news here..." aria-label="Search"/>
-        <button class="btn btn-outline-success" type="submit">Search</button>
+
+    <form class="page-search d-flex" role="search">
+        <input class="form-control" type="text" name="query" value="{{ query if query else '' }}" placeholder="Search for news here..." aria-label="Search">
+        <button class="btn-primary" type="submit">Search</button>
     </form>
-    <div class="rows">
+
+    {% if articles and articles|length > 0 %}
+
+        <!-- ============ HERO / FEATURED ============ -->
         {% for article in articles %}
-        <div class="column">
-            <div class="card">
-                {% if article.urlToImage %}
-                <img src="{{article.urlToImage}}" alt="picture" class="card-img">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title"><a href="{{article.url}}" target="_blank">{{article.title}}</a></h5>
-                    <p class="card-text">{{article.description}}</p>
-                </div>
-            </div>
-        </div>
+            {% if loop.first %}
+            <section class="hero" aria-label="Featured story">
+                <article class="hero-card">
+                    <a href="{{ article.url }}" target="_blank" rel="noopener" class="hero-media">
+                        {% if article.urlToImage %}
+                        <img src="{{ article.urlToImage }}" alt="{{ article.title }}" loading="lazy">
+                        {% else %}
+                        <div class="media-placeholder" aria-hidden="true"><i class="fa-solid fa-newspaper"></i></div>
+                        {% endif %}
+                    </a>
+                    <div class="hero-content">
+                        <span class="badge badge-breaking"><span class="pulse-dot" aria-hidden="true"></span>Breaking News</span>
+                        <h1 class="hero-title">
+                            <a href="{{ article.url }}" target="_blank" rel="noopener">{{ article.title }}</a>
+                        </h1>
+                        {% if article.description %}
+                        <p class="hero-desc">{{ article.description }}</p>
+                        {% endif %}
+                        <div class="hero-meta">
+                            {% if article.source and article.source.name %}<span class="meta-source">{{ article.source.name }}</span>{% endif %}
+                            {% if article.publishedAt %}<span class="meta-dot" aria-hidden="true">&middot;</span><time class="meta-date">{{ article.publishedAt }}</time>{% endif %}
+                        </div>
+                        <a href="{{ article.url }}" target="_blank" rel="noopener" class="read-more">Read Story <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                    </div>
+                </article>
+            </section>
+            {% endif %}
         {% endfor %}
-    </div>
+
+        <!-- ============ MAIN CONTENT: latest news + sidebar ============ -->
+        <div class="content-layout">
+
+            <section class="latest-news" aria-labelledby="latest-heading">
+                <div class="section-heading">
+                    <h2 id="latest-heading">Latest News</h2>
+                </div>
+
+                <div class="news-grid">
+                    {% for article in articles %}
+                        {% if not loop.first %}
+                        <article class="news-card">
+                            <a href="{{ article.url }}" target="_blank" rel="noopener" class="news-card-media">
+                                {% if article.urlToImage %}
+                                <img src="{{ article.urlToImage }}" alt="{{ article.title }}" loading="lazy">
+                                {% else %}
+                                <div class="media-placeholder" aria-hidden="true"><i class="fa-solid fa-newspaper"></i></div>
+                                {% endif %}
+                                {% if article.source and article.source.name %}
+                                <span class="badge badge-category">{{ article.source.name }}</span>
+                                {% endif %}
+                            </a>
+                            <div class="news-card-body">
+                                <h3 class="news-card-title">
+                                    <a href="{{ article.url }}" target="_blank" rel="noopener">{{ article.title }}</a>
+                                </h3>
+                                {% if article.description %}
+                                <p class="news-card-desc">{{ article.description }}</p>
+                                {% endif %}
+                                <div class="news-card-meta">
+                                    {% if article.source and article.source.name %}<span class="meta-source">{{ article.source.name }}</span>{% endif %}
+                                    {% if article.publishedAt %}<span class="meta-dot" aria-hidden="true">&middot;</span><time class="meta-date">{{ article.publishedAt }}</time>{% endif %}
+                                </div>
+                            </div>
+                        </article>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </section>
+
+            <aside class="sidebar" aria-label="Trending and categories">
+                <div class="sidebar-card">
+                    <h3><i class="fa-solid fa-fire" aria-hidden="true"></i> Trending Topics</h3>
+                    <ul class="trending-list">
+                        <li><a href="/?query=AI"><span class="trend-rank">01</span>AI</a></li>
+                        <li><a href="/?query=Kenya politics"><span class="trend-rank">02</span>Kenya Politics</a></li>
+                        <li><a href="/?query=finance"><span class="trend-rank">03</span>Business</a></li>
+                        <li><a href="/?query=technology"><span class="trend-rank">04</span>Technology</a></li>
+                        <li><a href="/?query=sports"><span class="trend-rank">05</span>Sports</a></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3><i class="fa-solid fa-layer-group" aria-hidden="true"></i> Popular Categories</h3>
+                    <ul class="category-chip-list">
+                        <li><a class="chip chip-kenya" href="/?query=Kenya">Kenya</a></li>
+                        <li><a class="chip chip-world" href="/?query=World">World</a></li>
+                        <li><a class="chip chip-technology" href="/?query=technology">Technology</a></li>
+                        <li><a class="chip chip-finance" href="/?query=finance">Finance</a></li>
+                        <li><a class="chip chip-health" href="/?query=health">Health</a></li>
+                        <li><a class="chip chip-sports" href="/?query=sports">Sports</a></li>
+                        <li><a class="chip chip-entertainment" href="/?query=Entertainment">Entertainment</a></li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+
+    {% else %}
+        <!-- ============ EMPTY STATE ============ -->
+        <div class="empty-state" role="status">
+            <i class="fa-regular fa-newspaper" aria-hidden="true"></i>
+            <h2>No stories found</h2>
+            <p>We couldn't find any news for "{{ query if query else '' }}". Try a different search term or pick a category above.</p>
+        </div>
+    {% endif %}
+
 </div>
 {% endblock %}
