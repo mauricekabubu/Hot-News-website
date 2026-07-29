@@ -1,19 +1,193 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hot News</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
+
+    <!-- ============ SEO: Dynamic Title ============ -->
+    <title>{% block title %}Hot News - Latest Breaking News{% endblock %}</title>
+
+    <!-- ============ SEO: Meta ============ -->
+    <meta name="description" content="{% block meta_description %}Hot News delivers the latest Kenya, technology, business and world news updates.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}Kenya news, breaking news, world news, technology news, business news, sports news{% endblock %}">
+    <meta name="author" content="Hot News">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0F1115">
+
+    <!-- ============ SEO: Canonical ============ -->
+    <link rel="canonical" href="{{ request.url }}">
+
+    <!-- ============ Open Graph ============ -->
+    <meta property="og:site_name" content="Hot News">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Hot News - Latest Breaking News{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Hot News delivers the latest Kenya, technology, business and world news updates.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ url_for('static', filename='images/og-default.jpg', _external=True) }}{% endblock %}">
+    <meta property="og:url" content="{{ request.url }}">
+
+    <!-- ============ Twitter Cards ============ -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}Hot News - Latest Breaking News{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Hot News delivers the latest Kenya, technology, business and world news updates.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ url_for('static', filename='images/og-default.jpg', _external=True) }}{% endblock %}">
+
+    <!-- ============ GEO: NewsMediaOrganization Schema ============ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "NewsMediaOrganization",
+      "name": "Hot News",
+      "url": "{{ request.url_root }}",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "{{ url_for('static', filename='images/logo.png', _external=True) }}"
+      },
+      "description": "Hot News delivers the latest Kenya, technology, business and world news updates.",
+      "location": {
+        "@type": "Place",
+        "name": "Nairobi, Kenya"
+      },
+      "sameAs": []
+    }
+    </script>
+
+    <!-- ============ GEO: Article Schema (populated per-article when available) ============ -->
+    {% block article_schema %}{% endblock %}
+
+    <!-- ============ Fonts ============ -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- ============ Icons ============ -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <!-- ============ Bootstrap (kept for existing functionality/utilities) ============ -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+    <!-- ============ Site CSS ============ -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Prevent dark-mode flash: set theme before first paint -->
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('hotnews-theme');
+                var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) {}
+        })();
+    </script>
+
+    {% block head_extra %}{% endblock %}
 </head>
 <body>
-    {% block body %}
-    {% endblock %}
+
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header" id="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="/">
+                <span class="brand-mark"><i class="fa-solid fa-fire" aria-hidden="true"></i></span>
+                <span class="brand-name">Hot<span class="brand-accent">News</span></span>
+            </a>
+
+            <nav class="main-nav" aria-label="Primary navigation">
+                <ul id="primary-menu">
+                    <li><a href="/?query=latest" class="nav-link" data-cat="home"><i class="fa-solid fa-house" aria-hidden="true"></i><span>Home</span></a></li>
+                    <li><a href="/?query=Kenya" class="nav-link" data-cat="kenya"><i class="fa-solid fa-earth-africa" aria-hidden="true"></i><span>Kenya</span></a></li>
+                    <li><a href="/?query=World" class="nav-link" data-cat="world"><i class="fa-solid fa-earth-europe" aria-hidden="true"></i><span>World</span></a></li>
+                    <li><a href="/?query=technology" class="nav-link" data-cat="technology"><i class="fa-solid fa-microchip" aria-hidden="true"></i><span>Technology</span></a></li>
+                    <li><a href="/?query=finance" class="nav-link" data-cat="finance"><i class="fa-solid fa-coins" aria-hidden="true"></i><span>Finance</span></a></li>
+                    <li><a href="/?query=health" class="nav-link" data-cat="health"><i class="fa-solid fa-viruses" aria-hidden="true"></i><span>Health</span></a></li>
+                    <li><a href="/?query=sports" class="nav-link" data-cat="sports"><i class="fa-solid fa-volleyball" aria-hidden="true"></i><span>Sports</span></a></li>
+                    <li><a href="/?query=Entertainment" class="nav-link" data-cat="entertainment"><i class="fa-solid fa-video" aria-hidden="true"></i><span>Entertainment</span></a></li>
+                    <li><a href="/?query=Education" class="nav-link" data-cat="education"><i class="fa-solid fa-user-graduate" aria-hidden="true"></i><span>Education</span></a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <button type="button" class="icon-btn" id="search-toggle" aria-expanded="false" aria-controls="header-search" aria-label="Open search">
+                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="icon-btn" id="theme-toggle" aria-label="Toggle dark mode">
+                    <i class="fa-solid fa-moon" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="icon-btn menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="primary-menu" aria-label="Toggle navigation menu">
+                    <i class="fa-solid fa-bars" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="header-search" id="header-search" hidden>
+            <form class="container search-form" role="search" action="/" method="get">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input type="text" name="query" value="{{ query if query else '' }}" placeholder="Search for news, topics, places…" aria-label="Search Hot News">
+                <button type="submit" class="btn-primary">Search</button>
+            </form>
+        </div>
+    </header>
+
+    <main id="main-content">
+        {% block body %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div class="footer-col footer-brand">
+                <a class="brand" href="/">
+                    <span class="brand-mark"><i class="fa-solid fa-fire" aria-hidden="true"></i></span>
+                    <span class="brand-name">Hot<span class="brand-accent">News</span></span>
+                </a>
+                <p>Independent, fast, and reliable coverage of Kenya and the world — technology, business, health, sports and more, updated around the clock.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Hot News on X (Twitter)"><i class="fa-brands fa-x-twitter" aria-hidden="true"></i></a>
+                    <a href="#" aria-label="Hot News on Facebook"><i class="fa-brands fa-facebook" aria-hidden="true"></i></a>
+                    <a href="#" aria-label="Hot News on Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+                    <a href="#" aria-label="Hot News on LinkedIn"><i class="fa-brands fa-linkedin" aria-hidden="true"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h3>Categories</h3>
+                <ul>
+                    <li><a href="/?query=Kenya">Kenya</a></li>
+                    <li><a href="/?query=World">World</a></li>
+                    <li><a href="/?query=technology">Technology</a></li>
+                    <li><a href="/?query=finance">Finance</a></li>
+                    <li><a href="/?query=health">Health</a></li>
+                    <li><a href="/?query=sports">Sports</a></li>
+                    <li><a href="/?query=Entertainment">Entertainment</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="#">About Hot News</a></li>
+                    <li><a href="#">Editorial Standards</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                    <li><a href="/sitemap.xml">Sitemap</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container footer-bottom">
+            <p>&copy; <span id="footer-year"></span> Hot News. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    {% block scripts %}{% endblock %}
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </html>
