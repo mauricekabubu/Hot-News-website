@@ -40,7 +40,7 @@ The project was built as a practical way to strengthen my skills in **backend de
 
 ### 🖥️ Desktop - Home Page
 
-![Hot News Desktop Home](screenshots/Screenshot 2026-08-30 134302.png)
+![Hot News Desktop Home](screenshots/desktop-home.png)
 
 ### 📰 Desktop - Latest News
 
