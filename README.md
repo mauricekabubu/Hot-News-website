@@ -40,7 +40,7 @@ The project was built as a practical way to strengthen my skills in **backend de
 
 ### 🖥️ Desktop - Home Page
 
-![Hot News Desktop Home](screenshots/desktop-home.png)
+![Hot News Desktop Home]("C:\Users\USER\OneDrive\NextWork - Everyone should be in a job they love_files\Desktop\.venv\Include\News_webapp\screenshots\Screenshot 2026-08-30 134302.png")
 
 ### 📰 Desktop - Latest News
 
